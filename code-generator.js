@@ -584,7 +584,7 @@ class CppCodeGenerator {
           } else if (returnType === 'void') {
             methodStr += indentLine + 'return;'
           } else {
-            methodStr += indentLine + 'return null;'
+            methodStr += indentLine + 'return nullptr;'
           }
           docs += '\n@return ' + returnType
         }
