@@ -22,8 +22,9 @@
 *
 */
 
-const _CPP_CODE_GEN_H = 'h'
+const _CPP_CODE_GEN_HPP = 'hpp'
 const _CPP_CODE_GEN_CPP = 'cpp'
+const _CPP_CODE_TEMPLATE_SEPARATOR = '|'
 
 const path = require('path')
 const fs = require('fs')
@@ -86,8 +87,8 @@ class CppCodeGenerator {
 
     var getFilePath = (extenstions) => {
       var absPath = basePath + '/' + elem.name + '.'
-      if (extenstions === _CPP_CODE_GEN_H) {
-        absPath += _CPP_CODE_GEN_H
+      if (extenstions === _CPP_CODE_GEN_HPP) {
+        absPath += _CPP_CODE_GEN_HPP
       } else {
         absPath += _CPP_CODE_GEN_CPP
       }
@@ -264,8 +265,8 @@ class CppCodeGenerator {
         })
       }
     } else if (elem instanceof type.UMLClass) {
-      // generate class header elem_name.h
-      file = getFilePath(_CPP_CODE_GEN_H)
+      // generate class header elem_name.hpp
+      file = getFilePath(_CPP_CODE_GEN_HPP)
       fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeClassHeader))
       // generate class cpp elem_name.cpp
       if (options.genCpp) {
@@ -277,11 +278,11 @@ class CppCodeGenerator {
        * interface will convert to class which only contains virtual method and member variable.
        */
       // generate interface header ONLY elem_name.h
-      file = getFilePath(_CPP_CODE_GEN_H)
+      file = getFilePath(_CPP_CODE_GEN_HPP)
       fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeClassHeader))
     } else if (elem instanceof type.UMLEnumeration) {
       // generate enumeration header ONLY elem_name.h
-      file = getFilePath(_CPP_CODE_GEN_H)
+      file = getFilePath(_CPP_CODE_GEN_HPP)
       fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeEnumeration))
     }
   }
@@ -579,7 +580,7 @@ class CppCodeGenerator {
         }
         methodStr += '\n}'
       } else {
-        methodStr += elem.name
+        methodStr += elem.name.split (_CPP_CODE_TEMPLATE_SEPARATOR).join ('\n') // Template declaration
         methodStr += '(' + inputParamStrings.join(', ') + ')'
         if (elem.isLeaf === true) {
           methodStr += ' final'
