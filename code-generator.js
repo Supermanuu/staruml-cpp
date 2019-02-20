@@ -114,7 +114,7 @@ class CppCodeGenerator {
           if (item instanceof type.UMLAttribute || item instanceof type.UMLAssociationEnd) { // if write member variable
             codeWriter.writeLine(cppCodeGen.getMemberVariable(item))
           } else if (item instanceof type.UMLOperation) { // if write method
-            codeWriter.writeLine(cppCodeGen.getMethod(item, false))
+            codeWriter.writeLine(cppCodeGen.getMethod(item, elem.name, false))
           } else if (item instanceof type.UMLClass) {
             writeClassHeader(codeWriter, item, cppCodeGen)
           } else if (item instanceof type.UMLEnumeration) {
@@ -205,7 +205,7 @@ class CppCodeGenerator {
         for (i = 0; i < elemList._public.length; i++) {
           item = elemList._public[i]
           if (item instanceof type.UMLOperation) { // if write method
-            codeWriter.writeLine(cppCodeGen.getMethod(item, true))
+            codeWriter.writeLine(cppCodeGen.getMethod(item, elem.name, true))
           } else if (item instanceof type.UMLClass) {
             writeClassBody(codeWriter, item, cppCodeGen)
           }
@@ -214,7 +214,7 @@ class CppCodeGenerator {
         for (i = 0; i < elemList._protected.length; i++) {
           item = elemList._protected[i]
           if (item instanceof type.UMLOperation) { // if write method
-            codeWriter.writeLine(cppCodeGen.getMethod(item, true))
+            codeWriter.writeLine(cppCodeGen.getMethod(item, elem.name, true))
           } else if (item instanceof type.UMLClass) {
             writeClassBody(codeWriter, item, cppCodeGen)
           }
@@ -223,7 +223,7 @@ class CppCodeGenerator {
         for (i = 0; i < elemList._private.length; i++) {
           item = elemList._private[i]
           if (item instanceof type.UMLOperation) { // if write method
-            codeWriter.writeLine(cppCodeGen.getMethod(item, true))
+            codeWriter.writeLine(cppCodeGen.getMethod(item, elem.name, true))
           } else if (item instanceof type.UMLClass) {
             writeClassBody(codeWriter, item, cppCodeGen)
           }
@@ -330,7 +330,7 @@ class CppCodeGenerator {
     var codeWriter = new codegen.CodeWriter(this.getIndentString(options))
     codeWriter.writeLine(copyrightHeader)
     codeWriter.writeLine()
-    codeWriter.writeLine('#include "' + elem.name + _CPP_CODE_GEN_HPP)
+    codeWriter.writeLine('#include "' + elem.name + '.' + _CPP_CODE_GEN_HPP + '"')
     codeWriter.writeLine()
     funct(codeWriter, elem, this)
     return codeWriter.getData()
@@ -425,7 +425,7 @@ class CppCodeGenerator {
       if (realize.target === elem) {
         continue
       }
-      headerString += '#include "' + trackingHeader(elem, realize.target) + '.h"\n'
+      headerString += '#include "' + trackingHeader(elem, realize.target) + '.' + _CPP_CODE_GEN_HPP + '"\n'
     }
 
     // check for member variable
@@ -442,7 +442,7 @@ class CppCodeGenerator {
       if (target === elem) {
         continue
       }
-      headerString += '#include "' + trackingHeader(elem, target) + '.h"\n'
+      headerString += '#include "' + trackingHeader(elem, target)+ '.' + _CPP_CODE_GEN_HPP + '"\n'
     }
     return headerString
   }
@@ -513,18 +513,10 @@ class CppCodeGenerator {
    * @param {boolean} isCppBody
    * @return {Object} string
    */
-  getMethod (elem, isCppBody) {
+  getMethod (elem, className, isCppBody) {
     if (elem.name.length > 0) {
       var docs = elem.documentation
       var i
-      var methodStr = ''
-      // var isVirtaul = false
-      // TODO virtual fianl static 키워드는 섞어 쓸수가 없다
-      if (elem.isStatic === true) {
-        methodStr += 'static '
-      } else if (elem.isAbstract === true) {
-        methodStr += 'virtual '
-      }
 
       var returnTypeParam = elem.parameters.filter(function (params) {
         return params.direction === 'return'
@@ -539,7 +531,21 @@ class CppCodeGenerator {
         docs += '\n@param ' + inputParam.name
       }
 
-      methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
+      var methodStr = ''
+      var template_method = elem.name.split (_CPP_CODE_TEMPLATE_SEPARATOR)
+      var template = ''
+      var name = ''
+      if (template_method.length > 1) {
+        template = template_method [0].trim() + '\n' // Template declaration
+        name = template_method [1].trim() // Method name
+      } else {
+        name = template_method [0].trim()
+      }
+      if (elem.isStatic === true) {
+        methodStr += 'static '
+      } else if (elem.isAbstract === true) {
+        methodStr += 'virtual '
+      }
 
       if (isCppBody) {
         var telem = elem
@@ -556,8 +562,12 @@ class CppCodeGenerator {
           indentLine += ' '
         }
 
+        methodStr += template
+        if (name !== className) { // Method return type
+          methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
+        }
         methodStr += specifier
-        methodStr += elem.name
+        methodStr += name
         methodStr += '(' + inputParamStrings.join(', ') + ')' + ' {\n'
         if (returnTypeParam.length > 0) {
           var returnType = this.getType(returnTypeParam[0])
@@ -580,7 +590,11 @@ class CppCodeGenerator {
         }
         methodStr += '\n}'
       } else {
-        methodStr += elem.name.split (_CPP_CODE_TEMPLATE_SEPARATOR).join ('\n') // Template declaration
+        methodStr += template
+        if (name !== className) { // Method return type
+          methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
+        }
+        methodStr += name + ' ';
         methodStr += '(' + inputParamStrings.join(', ') + ')'
         if (elem.isLeaf === true) {
           methodStr += ' final'
