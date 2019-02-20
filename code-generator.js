@@ -549,11 +549,6 @@ class CppCodeGenerator {
       } else {
         name = template_method [0].trim()
       }
-      if (elem.isStatic === true) {
-        methodStr += 'static '
-      } else if (elem.isAbstract === true) {
-        methodStr += 'virtual '
-      }
 
       if (isCppBody) {
         var telem = elem
@@ -598,17 +593,29 @@ class CppCodeGenerator {
         }
         methodStr += '\n}'
       } else {
+        // Modifier
+        if (elem.isStatic === true) {
+          methodStr += 'static '
+        } else if (elem.isAbstract === true) {
+          methodStr += 'virtual '
+        }
+        // Template
         methodStr += template
-        if (name !== className) { // Method return type
+        // Return type
+        if (name !== className) {
           methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
         }
+        // Name
         methodStr += name + ' ';
+        // Params
         methodStr += '(' + inputParamStrings.join(', ') + ')'
+        // Other
         if (elem.isLeaf === true) {
           methodStr += ' final'
         } else if (elem.isAbstract === true) { // TODO 만약 virtual 이면 모두 pure virtual? 체크 할것
           methodStr += ' = 0'
         }
+        // Ending
         methodStr += ';'
       }
       return '\n' + this.getDocuments(docs) + methodStr
