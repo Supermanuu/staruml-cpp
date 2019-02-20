@@ -258,7 +258,9 @@ class CppCodeGenerator {
     // Package -> as namespace or not
     if (elem instanceof type.UMLPackage) {
       fullPath = path.join(basePath, elem.name)
-      fs.mkdirSync(fullPath)
+      if (!fs.existsSync (fullPath)) {
+        fs.mkdirSync(fullPath)
+      }
       if (Array.isArray(elem.ownedElements)) {
         elem.ownedElements.forEach(child => {
           return this.generate(child, fullPath, options)
@@ -267,10 +269,12 @@ class CppCodeGenerator {
     } else if (elem instanceof type.UMLClass) {
       // generate class header elem_name.hpp
       file = getFilePath(_CPP_CODE_GEN_HPP)
-      fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeClassHeader))
+      if (!fs.existsSync (file)) {
+        fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeClassHeader))
+      }
       // generate class cpp elem_name.cpp
-      if (options.genCpp) {
-        file = getFilePath(_CPP_CODE_GEN_CPP)
+      file = getFilePath(_CPP_CODE_GEN_CPP)
+      if (options.genCpp && !fs.existsSync (file)) {
         fs.writeFileSync(file, this.writeBodySkeletonCode(elem, options, writeClassBody))
       }
     } else if (elem instanceof type.UMLInterface) {
@@ -279,11 +283,15 @@ class CppCodeGenerator {
        */
       // generate interface header ONLY elem_name.h
       file = getFilePath(_CPP_CODE_GEN_HPP)
-      fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeClassHeader))
+      if (!fs.existsSync (file)) {
+        fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeClassHeader))
+      }
     } else if (elem instanceof type.UMLEnumeration) {
       // generate enumeration header ONLY elem_name.h
       file = getFilePath(_CPP_CODE_GEN_HPP)
-      fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeEnumeration))
+      if (!fs.existsSync (file)) {
+        fs.writeFileSync(file, this.writeHeaderSkeletonCode(elem, options, writeEnumeration))
+      }
     }
   }
 
