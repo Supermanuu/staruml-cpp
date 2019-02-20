@@ -8,6 +8,7 @@
           "id": "tools.cpp",
           "submenu": [
             { "label": "Generate Code...", "id": "tools.cpp.generate", "command": "cpp:generate" },
+            { "label": "Clear paths", "id": "tools.cpp.paths", "command": "cpp:paths" },
             { "label": "Reverse Code...", "id": "tools.cpp.reverse", "command": "cpp:reverse" },
             { "type": "separator" },
             { "label": "Configure...", "id": "tools.cpp.configure", "command": "cpp:configure" }
