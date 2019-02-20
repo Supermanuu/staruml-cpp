@@ -330,7 +330,7 @@ class CppCodeGenerator {
     var codeWriter = new codegen.CodeWriter(this.getIndentString(options))
     codeWriter.writeLine(copyrightHeader)
     codeWriter.writeLine()
-    codeWriter.writeLine('#include "' + elem.name + '.h"')
+    codeWriter.writeLine('#include "' + elem.name + _CPP_CODE_GEN_HPP)
     codeWriter.writeLine()
     funct(codeWriter, elem, this)
     return codeWriter.getData()
