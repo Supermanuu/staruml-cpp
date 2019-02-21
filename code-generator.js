@@ -274,7 +274,7 @@ class CppCodeGenerator {
       }
       // generate class cpp elem_name.cpp
       file = getFilePath(_CPP_CODE_GEN_CPP)
-      if (options.genCpp && !fs.existsSync (file)) {
+      if (!elem.isAbstract && options.genCpp && !fs.existsSync (file)) {
         fs.writeFileSync(file, this.writeBodySkeletonCode(elem, options, writeClassBody))
       }
     } else if (elem instanceof type.UMLInterface) {
