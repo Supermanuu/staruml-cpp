@@ -59,7 +59,12 @@ class CodeWriter {
    */
   writeLine (line) {
     if (line) {
-      this.lines.push(this.indentations.join('') + line)
+      var indent = this.indentations.join('')
+      if (line.includes('\n')) {
+        this.lines.push(line.split('\n').join('\n' + indent))
+      } else {
+        this.lines.push(indent + line)
+      }
     } else {
       this.lines.push('')
     }
