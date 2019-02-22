@@ -170,7 +170,7 @@ class CppCodeGenerator {
       if (elem.isFinalSpecialization === true || elem.isLeaf === true) {
         finalModifier = ' final '
       }
-      var templatePart = cppCodeGen.getTemplateParameter(elem)
+      var templatePart = cppCodeGen.getTemplateParameter(elem, true)
       if (templatePart.length > 0) {
         codeWriter.writeLine(templatePart)
       }
@@ -350,16 +350,17 @@ class CppCodeGenerator {
    * Parsing template parameter
    *
    * @param {Object} elem
+   * @param {Boolean} appendTemplate
    * @return {Object} string
    */
-  getTemplateParameter (elem) {
+  getTemplateParameter (elem, appendTemplate) {
     var i
     var returnTemplateString = ''
     if (elem.templateParameters.length <= 0) {
       return returnTemplateString
     }
     var term = []
-    returnTemplateString = 'template<'
+    returnTemplateString = (appendTemplate ? 'template' : '') + '<'
     for (i = 0; i < elem.templateParameters.length; i++) {
       var template = elem.templateParameters[i]
       var templateStr = template.parameterType + ' '
@@ -571,7 +572,8 @@ class CppCodeGenerator {
         if (name !== className) { // Method return type
           methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
         }
-        methodStr += specifier
+        methodStr += specifier.slice (0, -2)
+        methodStr += this.getTemplateParameter (elem._parent, false) + '::'
         methodStr += name
         methodStr += '(' + inputParamStrings.join(', ') + ')' + ' {\n'
         if (returnTypeParam.length > 0) {
