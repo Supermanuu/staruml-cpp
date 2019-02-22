@@ -175,25 +175,27 @@ class CppCodeGenerator {
         codeWriter.writeLine(templatePart)
       }
 
-      codeWriter.writeLine('class ' + elem.name + finalModifier + writeInheritance(elem) + ' {')
+      codeWriter.writeLine('class ' + elem.name + finalModifier + writeInheritance(elem) + '\n{')
+      codeWriter.indent()
       if (classfiedAttributes._public.length > 0) {
-        codeWriter.writeLine('public: ')
+        codeWriter.writeLine('public:')
         codeWriter.indent()
         write(classfiedAttributes._public)
         codeWriter.outdent()
       }
       if (classfiedAttributes._protected.length > 0) {
-        codeWriter.writeLine('protected: ')
+        codeWriter.writeLine('protected:')
         codeWriter.indent()
         write(classfiedAttributes._protected)
         codeWriter.outdent()
       }
       if (classfiedAttributes._private.length > 0) {
-        codeWriter.writeLine('private: ')
+        codeWriter.writeLine('private:')
         codeWriter.indent()
         write(classfiedAttributes._private)
         codeWriter.outdent()
       }
+      codeWriter.outdent()
 
       codeWriter.writeLine('};')
     }
@@ -305,7 +307,7 @@ class CppCodeGenerator {
    * @return {string}
    */
   writeHeaderSkeletonCode (elem, options, funct) {
-    var headerString = '_' + elem.name.toUpperCase() + '_H'
+    var headerString = '_' + elem.name.toUpperCase() + '_' + _CPP_CODE_GEN_HPP.toUpperCase ();
     var codeWriter = new codegen.CodeWriter(this.getIndentString(options))
     var includePart = this.getIncludePart(elem)
     codeWriter.writeLine(copyrightHeader)
@@ -582,7 +584,7 @@ class CppCodeGenerator {
             methodStr += indentLine + 'return 0.0;'
           } else if (returnType === 'char') {
             methodStr += indentLine + "return '0';"
-          } else if (returnType === 'string' || returnType === 'String') {
+          } else if (returnType === 'string' || returnType === 'std::string' || returnType === 'String') {
             methodStr += indentLine + 'return "";'
           } else if (returnType === 'void') {
             methodStr += indentLine + 'return;'
@@ -688,6 +690,23 @@ class CppCodeGenerator {
    */
   getType (elem) {
     var _type = 'void'
+
+    var stdizer = (type) => {
+      var t = type
+      if (type.startsWith ('string')) {
+        t = 'std::string'
+      } else if (type.startsWith ('map')) {
+        t = 'std::map'
+      } else if (type.startsWith ('vector')) {
+        t = 'std::vector'
+      } else if (type.startsWith ('pair')) {
+        t = 'std::pair'
+      } else {
+        t = type
+      }
+      return t;
+    }
+
     if (elem instanceof type.UMLAssociationEnd) { // member variable from association
       if (elem.reference instanceof type.UMLModelElement && elem.reference.name.length > 0) {
         _type = elem.reference.name
@@ -696,7 +715,7 @@ class CppCodeGenerator {
       if (elem.type instanceof type.UMLModelElement && elem.type.name.length > 0) {
         _type = elem.type.name
       } else if ((typeof elem.type === 'string') && elem.type.length > 0) {
-        _type = elem.type
+        _type = stdizer (elem.type)
       }
     }
 
@@ -704,9 +723,9 @@ class CppCodeGenerator {
     if (elem.multiplicity) {
       if (['0..*', '1..*', '*'].includes(elem.multiplicity.trim())) {
         if (elem.isOrdered === true) {
-          _type = 'vector<' + _type + '>'
+          _type = 'std::vector<' + _type + '>'
         } else {
-          _type = 'vector<' + _type + '>'
+          _type = 'std::vector<' + _type + '>'
         }
       } else if (elem.multiplicity !== '1' && elem.multiplicity.match(/^\d+$/)) { // number
         // TODO check here
