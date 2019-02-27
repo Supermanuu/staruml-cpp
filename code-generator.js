@@ -696,15 +696,13 @@ class CppCodeGenerator {
     var stdizer = (type) => {
       var t = type
       if (type.startsWith ('string')) {
-        t = 'std::string'
+        t = t.replace ('string', 'std::string')
       } else if (type.startsWith ('map')) {
-        t = 'std::map'
+        t = t.replace ('map', 'std::map')
       } else if (type.startsWith ('vector')) {
-        t = 'std::vector'
+        t = t.replace ('vector', 'std::vector')
       } else if (type.startsWith ('pair')) {
-        t = 'std::pair'
-      } else {
-        t = type
+        t = t.replace ('pair', 'std::pair')
       }
       return t;
     }
