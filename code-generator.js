@@ -705,6 +705,12 @@ class CppCodeGenerator {
         t = t.replace ('pair', 'std::pair')
       } else if (type.startsWith ('thread')) {
         t = t.replace ('thread', 'std::thread')
+      } else if (type.startsWith ('ostream')) {
+        t = t.replace ('ostream', 'std::ostream')
+      } else if (type.startsWith ('istream')) {
+        t = t.replace ('istream', 'std::istream')
+      } else if (type.startsWith ('fstream')) {
+        t = t.replace ('fstream', 'std::fstream')
       }
       return t;
     }
