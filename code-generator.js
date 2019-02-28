@@ -569,7 +569,7 @@ class CppCodeGenerator {
         }
 
         methodStr += template
-        if (name !== className) { // Method return type
+        if (name !== className && name !== ('~' + className)) { // Method return type
           methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
         }
         methodStr += specifier.slice (0, -2)
@@ -606,7 +606,7 @@ class CppCodeGenerator {
         // Template
         methodStr += template
         // Return type
-        if (name !== className) {
+        if (name !== className && name !== ('~' + className)) {
           methodStr += ((returnTypeParam.length > 0) ? this.getType(returnTypeParam[0]) : 'void') + ' '
         }
         // Name
