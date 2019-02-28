@@ -538,7 +538,7 @@ class CppCodeGenerator {
       var inputParamStrings = []
       for (i = 0; i < inputParams.length; i++) {
         var inputParam = inputParams[i]
-        inputParamStrings.push(this.getType(inputParam) + ' ' + inputParam.name)
+        inputParamStrings.push(this.getType(inputParam) + ' ' + inputParam.name + ((inputParam.defaultValue && inputParam.defaultValue.length > 0) ? ' = ' + inputParam.defaultValue : ''))
         docs += '\n@param ' + inputParam.name
       }
 
@@ -703,6 +703,8 @@ class CppCodeGenerator {
         t = t.replace ('vector', 'std::vector')
       } else if (type.startsWith ('pair')) {
         t = t.replace ('pair', 'std::pair')
+      } else if (type.startsWith ('thread')) {
+        t = t.replace ('thread', 'std::thread')
       }
       return t;
     }
