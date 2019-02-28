@@ -711,6 +711,8 @@ class CppCodeGenerator {
         t = t.replace ('istream', 'std::istream')
       } else if (type.startsWith ('fstream')) {
         t = t.replace ('fstream', 'std::fstream')
+      } else if (type.startsWith ('atomic')) {
+        t = t.replace ('atomic', 'std::atomic')
       }
       return t;
     }
