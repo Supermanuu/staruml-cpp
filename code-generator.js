@@ -102,7 +102,15 @@ class CppCodeGenerator {
       for (i = 0; i < modifierList.length; i++) {
         modifierStr += modifierList[i] + ' '
       }
-      codeWriter.writeLine(modifierStr + 'enum ' + elem.name + ' { ' + elem.literals.map(lit => lit.name).join(', ') + ' };')
+      if (elem.documentation.length > 0) {
+        codeWriter.writeLine(codeWriter.indentations.join('') + cppCodeGen.getDocuments(elem.documentation).slice(0,-1))
+      }
+      var enumClass = elem.isLeaf ? 'class ' : ''
+      codeWriter.writeLine(modifierStr + 'enum ' + enumClass + elem.name + ' {')
+      codeWriter.indent()
+      codeWriter.writeLine(codeWriter.indentations.join('') + elem.literals.map(lit => lit.name).join(',\n'))
+      codeWriter.outdent()
+      codeWriter.writeLine('};')
     }
 
     var writeClassHeader = (codeWriter, elem, cppCodeGen) => {
@@ -111,14 +119,18 @@ class CppCodeGenerator {
         var i
         for (i = 0; i < items.length; i++) {
           var item = items[i]
+          if (item instanceof type.UMLEnumeration) {
+            writeEnumeration(codeWriter, item, cppCodeGen)
+          }
+        }
+        for (i = 0; i < items.length; i++) {
+          var item = items[i]
           if (item instanceof type.UMLAttribute || item instanceof type.UMLAssociationEnd) { // if write member variable
             codeWriter.writeLine(cppCodeGen.getMemberVariable(item))
           } else if (item instanceof type.UMLOperation) { // if write method
             codeWriter.writeLine(cppCodeGen.getMethod(item, elem.name, false))
           } else if (item instanceof type.UMLClass) {
             writeClassHeader(codeWriter, item, cppCodeGen)
-          } else if (item instanceof type.UMLEnumeration) {
-            writeEnumeration(codeWriter, item, cppCodeGen)
           }
         }
       }
@@ -178,25 +190,32 @@ class CppCodeGenerator {
       codeWriter.writeLine('class ' + elem.name + finalModifier + writeInheritance(elem) + '\n{')
       codeWriter.indent()
       if (classfiedAttributes._public.length > 0) {
+        codeWriter.writeLine()
         codeWriter.writeLine('public:')
+        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._public)
         codeWriter.outdent()
       }
       if (classfiedAttributes._protected.length > 0) {
+        codeWriter.writeLine()
         codeWriter.writeLine('protected:')
+        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._protected)
         codeWriter.outdent()
       }
       if (classfiedAttributes._private.length > 0) {
+        codeWriter.writeLine()
         codeWriter.writeLine('private:')
+        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._private)
         codeWriter.outdent()
       }
       codeWriter.outdent()
 
+      codeWriter.writeLine()
       codeWriter.writeLine('};')
     }
 
