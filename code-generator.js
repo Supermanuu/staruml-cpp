@@ -200,6 +200,7 @@ class CppCodeGenerator {
       if (classfiedAttributes._protected.length > 0) {
         codeWriter.writeLine()
         codeWriter.writeLine('protected:')
+        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._protected)
         codeWriter.outdent()
@@ -207,6 +208,7 @@ class CppCodeGenerator {
       if (classfiedAttributes._private.length > 0) {
         codeWriter.writeLine()
         codeWriter.writeLine('private:')
+        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._private)
         codeWriter.outdent()
