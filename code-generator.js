@@ -102,6 +102,7 @@ class CppCodeGenerator {
       for (i = 0; i < modifierList.length; i++) {
         modifierStr += modifierList[i] + ' '
       }
+      codeWriter.writeLine()
       if (elem.documentation.length > 0) {
         codeWriter.writeLine(codeWriter.indentations.join('') + cppCodeGen.getDocuments(elem.documentation).slice(0,-1))
       }
@@ -192,7 +193,6 @@ class CppCodeGenerator {
       if (classfiedAttributes._public.length > 0) {
         codeWriter.writeLine()
         codeWriter.writeLine('public:')
-        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._public)
         codeWriter.outdent()
@@ -200,7 +200,6 @@ class CppCodeGenerator {
       if (classfiedAttributes._protected.length > 0) {
         codeWriter.writeLine()
         codeWriter.writeLine('protected:')
-        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._protected)
         codeWriter.outdent()
@@ -208,7 +207,6 @@ class CppCodeGenerator {
       if (classfiedAttributes._private.length > 0) {
         codeWriter.writeLine()
         codeWriter.writeLine('private:')
-        codeWriter.writeLine()
         codeWriter.indent()
         write(classfiedAttributes._private)
         codeWriter.outdent()
