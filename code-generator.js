@@ -429,6 +429,18 @@ class CppCodeGenerator {
     var realizations = app.repository.getRelationshipsOf(elem, function (rel) {
       return (rel instanceof type.UMLInterfaceRealization || rel instanceof type.UMLGeneralization)
     })
+    var dependencies = app.repository.getRelationshipsOf(elem, function (rel) {
+      return (rel instanceof type.UMLDependency)
+    })
+
+    // check dependencies
+    for (i = 0; i < dependencies.length; i++) {
+      var dep = dependencies[i]
+      if (dep.target === elem) {
+        continue
+      }
+      headerString += '#include "' + trackingHeader(elem, dep.target)+ '.' + _CPP_CODE_GEN_HPP + '"\n'
+    }
 
     // check for interface or class
     for (i = 0; i < realizations.length; i++) {
