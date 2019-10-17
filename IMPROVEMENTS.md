@@ -6,3 +6,4 @@
 3. [ ] Comprobar si la clase usa vector, string, map... para añadir sus dependencias
 4. [ ] Si un metodo devuelve un vector, string, map... crear un constructor vacío en el return
 5. [ ] Añadir los datatypes como structs y que tambien funcionen dentro de una clase
+6. [ ] Evitar que los .cpp tengan valores por defecto... solo pueden tenerlo los .hpp
