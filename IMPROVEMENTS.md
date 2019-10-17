@@ -7,3 +7,4 @@
 4. [ ] Si un metodo devuelve un vector, string, map... crear un constructor vacío en el return
 5. [ ] Añadir los datatypes como structs y que tambien funcionen dentro de una clase
 6. [ ] Evitar que los .cpp tengan valores por defecto... solo pueden tenerlo los .hpp
+7. [ ] Las clases internas en el retorno de los métodos deben de estar especificadas dentro de la clase padre
